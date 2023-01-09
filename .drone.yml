@@ -1,0 +1,78 @@
+---
+kind: pipeline
+name: linux-amd64-latest
+
+platform:
+  arch: amd64
+  os: linux
+
+steps:
+- name: build docker image
+  image: plugins/docker
+  settings:
+    repo: svedrin/lldpd
+    tags: latest-amd64
+    username: svedrin
+    password:
+      from_secret: docker-registry-pw
+    cache_from: "svedrin/lldpd:latest-amd64"
+
+trigger:
+  branch:
+  - main
+  event:
+    exclude:
+    - pull_request
+
+---
+kind: pipeline
+name: linux-armv7l-latest
+
+platform:
+  arch: arm
+  os: linux
+
+steps:
+- name: build docker image
+  image: plugins/docker
+  settings:
+    repo: svedrin/lldpd
+    tags: latest-armv7l
+    username: svedrin
+    password:
+      from_secret: docker-registry-pw
+    cache_from: "svedrin/lldpd:latest-armv7l"
+
+trigger:
+  branch:
+  - main
+  event:
+    exclude:
+    - pull_request
+
+
+---
+kind: pipeline
+type: docker
+name: manifest-latest
+
+steps:
+- name: publish
+  image: plugins/manifest:1.2
+  settings:
+    ignore_missing: true
+    spec: docker-manifest.tmpl
+    username: svedrin
+    password:
+      from_secret: docker-registry-pw
+
+trigger:
+  branch:
+  - main
+  event:
+    exclude:
+    - pull_request
+
+depends_on:
+- linux-amd64-latest
+- linux-armv7l-latest

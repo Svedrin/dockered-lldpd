@@ -1,0 +1,14 @@
+image: svedrin/lldpd:latest
+
+manifests:
+
+  - image: svedrin/lldpd:latest-amd64
+    platform:
+      architecture: amd64
+      os: linux
+
+  - image: svedrin/lldpd:latest-armv7l
+    platform:
+      architecture: arm
+      os: linux
+      variant: v7
